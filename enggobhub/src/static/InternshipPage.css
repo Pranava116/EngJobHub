@@ -1,0 +1,8 @@
+.InternshipPage{
+  position: relative;
+  /* background-color: aqua; */
+  display: flex;
+  margin: 20px 50px 50px 50px;
+  justify-content: space-around;
+  gap: 30px;
+}

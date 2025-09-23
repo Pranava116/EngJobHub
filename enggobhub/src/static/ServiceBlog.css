@@ -1,0 +1,146 @@
+.BlogContainerdiv{
+  margin-top: 10px;
+  box-sizing: border-box;
+  padding: 40px 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  background:linear-gradient(to right,rgb(16, 16, 16) 5%,rgb(14, 13, 13) 50%,rgb(14, 14, 14),rgb(27, 27, 27));
+}
+
+.BlogContainer {
+  color: white;
+  position: relative;
+  font-family: sans-serif;  
+}
+
+.BlogContainer::before,
+.BlogContainer::after{
+  content: "";
+  background-color: #fab5704c;
+  position: absolute;
+}
+
+
+
+.BlogContainer::before {
+  border-radius: 50%;
+  width: 7rem;
+  height: 7rem;
+  top: 30%;
+  left: 7%;
+  filter: blur(25px);
+  z-index: -1;
+}
+
+
+.BlogContainer::after {
+  border-radius: 50%;
+  width: 8rem;
+  height: 8rem;
+  top: 30%;
+  right: 17%;
+  filter: blur(25px);
+  z-index: -1;
+}
+
+.BlogContainer .box {
+  width: 100%;
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.074);
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-radius: 0.7rem;
+  transition: all ease 0.3s;
+}
+
+.BlogContainer .box {
+  display: flex;
+  justify-content: space-between;
+  gap: 50px;
+  /* align-items: center; */
+}
+
+.box .blogdiv{
+  width: 500px;
+  height: 300px;
+  align-self: center;
+  z-index: 10;
+}
+
+.box .blogdiv img{
+  width: 100%;
+  height: 100%;
+  border-radius: 0.7rem;
+}
+
+.BlogContainer .box .title {
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+}
+
+.BlogContainer .box .boxContent{
+  height: 100%;
+  width: 700px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.BlogContainer .box .boxContent .content{
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.5;
+  margin-left: 20px;
+  word-spacing: 3px;
+}
+
+.BlogContainer .box div strong {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.BlogContainer .box div p {
+  margin: 0;
+  font-size: 0.9em;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+}
+
+.BlogContainer .box div span {
+  font-size: 0.7rem;
+  font-weight: 300;
+}
+
+.BlogContainer .box div span:nth-child(3) {
+  font-weight: 500;
+  margin-right: 0.2rem;
+}
+
+.BlogContainer .box:hover {
+  box-shadow: 0px 0px 20px 1px #ffbb763f;
+  border: 1px solid rgba(255, 255, 255, 0.454);
+}
+
+.BlogContainer{
+  animation: scrollview ease-in-out 1s ;
+  animation-timeline: view();
+  animation-range: 0% 60%;
+}
+
+@keyframes scrollview {
+  from{
+    opacity: .6;
+    transform: scale(.7);
+ }
+ to {
+   opacity: 1;
+   transform: scale(1);
+ }
+}
+
+
+

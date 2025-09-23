@@ -1,0 +1,143 @@
+.StandOutContainerdiv{
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+  align-items: center;
+  margin: 50px 0px 0px 65px ;
+}
+
+.StandOutContainer {
+  display: flex;
+  width: 650px;
+  height: 500px;
+  max-width: 99%;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background-color: #ffffff25;
+  border-radius: 15px;
+  box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.219);
+  border: 0.1px solid rgba(128, 128, 128, 0.178);
+  padding: 10px 50px;
+}
+
+.StandOutContainer .left {
+  width: 66%;
+  height: 100%;
+}
+
+.StandOutContainer .formhome {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  backdrop-filter: blur(20px);
+  position: relative;
+  gap: 20px;
+}
+
+
+.formhome::before {
+  position: absolute;
+  content: "";
+  width: 40%;
+  height: 40%;
+  right: 1%;
+  z-index: -1;
+  background: radial-gradient(
+    circle,
+    rgb(194, 13, 170) 20%,
+    rgb(26, 186, 235) 60%,
+
+    rgb(26, 186, 235) 100%
+  );
+  filter: blur(70px);
+  border-radius: 50%;
+}
+
+.StandOutContainer .right {
+  width: 34%;
+  height: 100%;
+}
+
+.StandOutContainer .img {
+  width: 100%;
+  height: 100%;
+}
+
+.StandOutContainer::after {
+  position: absolute;
+  content: "";
+  width: 80%;
+  height: 80%;
+  right: -40%;
+  background: rgb(157, 173, 203);
+  background: radial-gradient(
+    circle,
+    rgba(157, 173, 203, 1) 61%,
+    rgba(99, 122, 159, 1) 100%
+  );
+  border-radius: 50%;
+  z-index: -1;
+}
+
+.formhome .input,
+.formhome button {
+  background: rgba(253, 253, 253, 0);
+  outline: none;
+  border: 1px solid rgba(255, 0, 0, 0);
+  border-radius: 0.5rem;
+  padding: 20px;
+  margin: 10px auto;
+  width: 80%;
+  display: block;
+  color: #425981;
+  font-weight: 500;
+  font-size: 1.1em;
+  
+}
+
+.input-block {
+  position: relative;
+}
+
+.formhome label {
+  position: absolute;
+  left: 15%;
+  top: 37%;
+  pointer-events: none;
+  color: gray;
+  font-weight: 600;
+}
+
+
+.formhome .input:focus + label,
+.formhome .input:valid + label {
+  transform: translateY(-180%) scale(1.1);
+  transition: all 0.4s;
+}
+
+.formhome button {
+  background-color: #5e7eb6;
+  color: white;
+  font-size: 20px;
+  box-shadow: 2px 4px 8px rgba(70, 70, 70, 0.178);
+  padding: 13px 15px;
+}
+
+.formhome button:hover{
+  background-color: #476fb5;
+}
+
+.formhome button:active{
+  background-color: #476fb5d0;
+}
+
+.formhome .input {
+  box-shadow: inset 4px 4px 4px rgba(165, 163, 163, 0.315),
+    4px 4px 4px rgba(218, 218, 218, 0.13);
+}

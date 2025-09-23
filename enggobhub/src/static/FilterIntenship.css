@@ -1,0 +1,115 @@
+/* body {
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 30px;
+} */
+
+.filter-box {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  width: 600px; 
+  height: 800px;
+  /* position: relative;
+  top: 110px;
+  left: 40px; */
+  /* transform: translate(-50%, -50%); */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-content:space-evenly ;
+ } 
+
+.filter-header {
+  font-size: 20px; 
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.filter-header::before {
+  content: "🔍";
+  margin-right: 10px;
+}
+
+.filter-box .input-label {
+  font-size: 15px;
+  font-weight: bold;
+  display: block;
+  margin-top: 12px;
+}
+
+.filter-box input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  height: 50px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  margin-top: 10px;
+}
+
+.checkbox-label input {
+  margin-right: 10px;
+}
+
+.filter-box .slider-container {
+  margin-top: 14px;
+}
+
+.filter-box .slider-label {
+  font-size: 15px;
+  font-weight: bold;
+  display: block;
+}
+
+.filter-box .slider {
+  width: 100%;
+  margin-top: 8px;
+  accent-color: blue;
+}
+
+.filter-box .slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: gray;
+}
+
+.filter-box .links {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  margin-top: 40px;
+}
+
+.filter-box .more-filters {
+  text-decoration: none;
+  color: blue;
+  font-weight: bold;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.filter-box .clear-all {
+  text-decoration: none;
+  color: blue;
+  font-weight: bold;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
