@@ -1,7 +1,8 @@
 // src/pages/Auth.jsx
 import React, { useState } from "react";
 import "./Auth.css";
-
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 function Auth() {
   const [role, setRole] = useState("Student");
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ function Auth() {
     password: "",
   });
   const [isLogin, setIsLogin] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -22,12 +24,29 @@ function Auth() {
     setRole(roleType);
   };
 
-  const handleSubmit = (e) => {
+  async function  handleSubmit (e){
     e.preventDefault();
     if (isLogin) {
       console.log("Logging in with:", formData);
+      const response = await axios.post("http://localhost:5000/api/auth/login", formData);
+      console.log(response);
+      if (response?.data?.token) {
+        localStorage.setItem("token", response.data.token);
+      }
+      if(response?.data?.user?.role === "educator"){
+        navigate("/educator");
+      } else {
+        navigate("/student");
+      }
+
     } else {
       console.log("Registering as:", role, formData);
+      const payload = { ...formData, role: role.toLowerCase() };
+      const response = await axios.post("http://localhost:5000/api/auth/register", payload);
+      console.log(response);
+      if(response){
+        isLogin(true)
+      }
     }
   };
 
