@@ -44,9 +44,6 @@ function Auth() {
       const payload = { ...formData, role: role.toLowerCase() };
       const response = await axios.post("http://localhost:5000/api/auth/register", payload);
       console.log(response);
-      if(response){
-        isLogin(true)
-      }
     }
   };
 
