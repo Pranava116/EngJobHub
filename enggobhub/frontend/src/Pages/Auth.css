@@ -1,12 +1,17 @@
+/* Page container */
+
+
 .auth-container {
   display: flex;
   justify-content: center;
-  align-items: center;    
-  height: 100vh; 
-  background-color: #f0f2f5; 
+  align-items: center;
+  min-height: calc(100vh - 70px); /* keep below navbar */
+  padding-top: 70px;
+  background-color: #f0f2f5;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Auth box */
 .auth-box {
   background: #fff;
   padding: 40px 30px;
@@ -14,8 +19,11 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
   width: 350px;
   text-align: center;
+  animation: fadeIn 0.4s ease;
+  margin: auto;
 }
 
+/* Title */
 .auth-title {
   margin-bottom: 20px;
   font-size: 22px;
@@ -23,6 +31,7 @@
   color: #333;
 }
 
+/* Role toggle (Student / Educator) */
 .role-toggle {
   display: flex;
   margin-bottom: 25px;
@@ -34,15 +43,16 @@
 .role-toggle button {
   flex: 1;
   padding: 12px;
-  background:black;
+  background: #f9f9f9;
   border: none;
   font-size: 15px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .role-toggle button:hover {
-  background: #eee;
+  background: #f0f0f0;
 }
 
 .role-toggle button.active {
@@ -51,7 +61,7 @@
   font-weight: bold;
 }
 
-/* Inputs */
+/* Input fields */
 .auth-form .form-group {
   margin-bottom: 16px;
 }
@@ -59,36 +69,41 @@
 .auth-form input {
   width: 100%;
   padding: 12px;
+  background: #fff; /* force white background */
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 14px;
   outline: none;
   transition: border 0.3s, box-shadow 0.3s;
+  color: #333;
 }
 
 .auth-form input:focus {
   border-color: #2575fc;
-  box-shadow: 0 0 6px rgba(37, 117, 252, 0.4);
+  box-shadow: 0 0 6px rgba(37, 117, 252, 0.3);
 }
 
-/* Button */
+/* Submit button */
 .submit-btn {
   width: 100%;
   padding: 12px;
-  background: #2575fc;
+  background: #2575fc; /* match navbar blue */
   border: none;
   border-radius: 6px;
   color: white;
   font-size: 15px;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(37, 117, 252, 0.25);
 }
 
 .submit-btn:hover {
   background: #1a5edb;
+  transform: translateY(-2px);
 }
 
+/* Switch auth (Login/Register link) */
 .switch-auth {
   margin-top: 18px;
   font-size: 14px;
@@ -104,4 +119,16 @@
 
 .switch-auth span:hover {
   color: #1a5edb;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
