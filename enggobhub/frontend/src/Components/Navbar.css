@@ -1,34 +1,86 @@
-/* Navbar wrapper */
 .navbar {
   width: 100%;
   background-color: #ffffff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   padding: 12px 20px;
-  position: sticky; /* stays at top when scrolling */
+  position: sticky;
   top: 0;
   z-index: 1000;
 }
 
-/* Flexbox for spacing */
 .navbar-container {
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
-  justify-content: space-between; /* left logo, right button */
+  justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap; /* allow wrapping on small screens */
 }
 
-/* Logo / Brand */
+/* Logo */
 .navbar-logo {
   font-size: 20px;
   font-weight: bold;
-  color: #2563eb; /* blue */
+  color: #2563eb;
+}
+
+/* Links */
+.navbar-links {
+  display: flex;
+  gap: 24px;
+  margin-left: 20px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #374151;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #2563eb;
+}
+
+/* Search bar */
+.navbar-search {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.search-input {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px 0 0 6px;
+  outline: none;
+  width: 180px;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #2563eb;
+}
+
+.search-button {
+  padding: 6px 10px;
+  border: 1px solid #2563eb;
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  background-color: #2563eb;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+  background-color: #1e40af;
 }
 
 /* Register button */
 .register-button {
   padding: 10px 20px;
-  background-color: #2563eb; /* blue */
+  background-color: #2563eb;
   color: white;
   font-weight: 600;
   border-radius: 6px;
@@ -36,7 +88,38 @@
   transition: background-color 0.3s ease;
 }
 
-/* Hover effect */
-.register-button:hover {
-  background-color: #1e40af; /* darker blue */
+/* Responsive */
+@media (max-width: 768px) {
+  .navbar-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .navbar-links {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .navbar-search {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .search-button {
+    width: 100%;
+    border-radius: 6px;
+    margin-top: 6px;
+    border-left: 1px solid #2563eb;
+  }
+
+  .register-button {
+    width: 100%;
+    text-align: center;
+  }
 }
