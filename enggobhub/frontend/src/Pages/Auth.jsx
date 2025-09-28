@@ -117,7 +117,7 @@ function Auth() {
           </button>
         </form>
 
-        {/* Switch between Login/Register */}
+        {}
         <p className="switch-auth">
           {isLogin ? (
             <>

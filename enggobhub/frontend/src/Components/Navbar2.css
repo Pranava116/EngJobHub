@@ -17,7 +17,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap; /* allow wrapping on small screens */
 }
 
 /* Logo */
@@ -52,8 +51,8 @@
   color: #2563eb;
 }
 
-/* Register button */
-.register-button {
+/* logout button */
+.logout-button {
   padding: 10px 22px;
   background: linear-gradient(90deg, #2563eb, #1e40af);
   color: white;
@@ -64,7 +63,7 @@
   box-shadow: 0 3px 6px rgba(37, 99, 235, 0.2);
 }
 
-.register-button:hover {
+.logout-button:hover {
   background: linear-gradient(90deg, #1e40af, #1d4ed8);
   transform: translateY(-2px);
   box-shadow: 0 5px 10px rgba(37, 99, 235, 0.3);
@@ -118,7 +117,7 @@
     display: flex;
   }
 
-  .register-button {
+  .logout-button {
     width: 90%;
     text-align: center;
   }
@@ -157,7 +156,7 @@
     display: flex;
   }
 
-  .register-button {
+  .logout-button {
     width: 90%;
     text-align: center;
   }
