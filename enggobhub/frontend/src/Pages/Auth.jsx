@@ -43,11 +43,13 @@ function Auth() {
       console.log("Registering as:", role, formData);
       const payload = { ...formData, role: role.toLowerCase() };
       const response = await axios.post("http://localhost:5000/api/auth/register", payload);
+      if (response?.data)setIsLogin(true);
       console.log(response);
     }
   };
 
   return (
+    
     <div className="auth-container">
       <div className="auth-box">
         <h2 className="auth-title">
