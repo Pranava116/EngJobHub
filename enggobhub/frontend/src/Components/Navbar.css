@@ -1,31 +1,29 @@
-/* Navbar base */
+/* Navbar container */
 .navbar {
   width: 100%;
   background-color: #ffffff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  padding: 12px 24px;
-  position: fixed;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 12px 20px;
+  position: sticky;
   top: 0;
-  left: 0;
   z-index: 1000;
 }
 
-/* Flex container */
 .navbar-container {
-  max-width: 1300px;
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap; /* allow wrapping on small screens */
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 /* Logo */
 .navbar-logo {
-  font-size: 22px;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #2563eb;
-  letter-spacing: 1px;
   cursor: pointer;
   transition: color 0.3s ease;
 }
@@ -34,131 +32,120 @@
   color: #1e40af;
 }
 
-/* Links */
+/* Nav links */
 .navbar-links {
   display: flex;
   gap: 24px;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
 }
 
-.navbar-links a {
+.nav-link {
   text-decoration: none;
   color: #374151;
   font-weight: 500;
   transition: color 0.3s ease;
 }
 
-.navbar-links a:hover {
+.nav-link:hover {
   color: #2563eb;
+}
+
+/* Search bar container */
+.navbar-search {
+  display: flex;
+  align-items: center;
+  position: relative;
+  border-radius: 999px; /* fully rounded */
+  overflow: hidden;
+  border: 1px solid #d1d5db;
+  transition: box-shadow 0.3s ease;
+}
+
+.navbar-search:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+/* Input */
+.search-input {
+  padding: 8px 40px 8px 16px; /* space for icon */
+  border: none;
+  outline: none;
+  width: 220px;
+  font-size: 0.95rem;
+  border-radius: 999px;
+}
+
+.search-input::placeholder {
+  color: #9ca3af;
+}
+
+/* Button inside search bar */
+.search-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 40px;
+  border: none;
+  background-color: #2563eb;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+  background-color: #1e40af;
 }
 
 /* Register button */
 .register-button {
-  padding: 10px 22px;
-  background: linear-gradient(90deg, #2563eb, #1e40af);
+  padding: 10px 20px;
+  background-color: #2563eb;
   color: white;
   font-weight: 600;
   border-radius: 8px;
   text-decoration: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 3px 6px rgba(37, 99, 235, 0.2);
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .register-button:hover {
-  background: linear-gradient(90deg, #1e40af, #1d4ed8);
+  background-color: #1e40af;
   transform: translateY(-2px);
-  box-shadow: 0 5px 10px rgba(37, 99, 235, 0.3);
 }
 
-/* Hamburger Menu */
-.hamburger {
-  display: none;
-  flex-direction: column;
-  cursor: pointer;
-  gap: 5px;
-}
-
-.hamburger span {
-  width: 25px;
-  height: 3px;
-  background: #374151;
-  border-radius: 2px;
-  transition: all 0.3s ease;
-}
-
-/* Mobile styles */
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .navbar-container {
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 
   .navbar-links {
-    position: absolute;
-    top: 60px;
-    left: 0;
-    width: 100%;
-    background: #ffffff;
     flex-direction: column;
-    gap: 16px;
-    align-items: center;
-    padding: 15px 0;
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    width: 100%;
+    gap: 8px;
   }
 
-  .navbar-links.active {
-    max-height: 300px;
-    opacity: 1;
+  .navbar-search {
+    width: 100%;
   }
 
-  .hamburger {
-    display: flex;
+  .search-input {
+    width: 100%;
+  }
+
+  .search-button {
+    width: 100%;
+    border-radius: 0 0 8px 8px;
+    margin-top: 4px;
+    position: static;
   }
 
   .register-button {
-    width: 90%;
-    text-align: center;
-  }
-}
-
-/* Mobile styles: collapse if width OR height is small */
-@media (max-width: 768px), (max-height: 500px) {
-  .navbar-container {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-
-  .navbar-links {
-    position: absolute;
-    top: 60px;
-    left: 0;
     width: 100%;
-    background: #ffffff;
-    flex-direction: column;
-    gap: 16px;
-    align-items: center;
-    padding: 15px 0;
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    transition: max-height 0.3s ease, opacity 0.3s ease;
-  }
-
-  .navbar-links.active {
-    max-height: 300px;
-    opacity: 1;
-  }
-
-  .hamburger {
-    display: flex;
-  }
-
-  .register-button {
-    width: 90%;
     text-align: center;
   }
 }

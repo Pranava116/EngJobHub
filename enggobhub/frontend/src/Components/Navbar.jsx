@@ -5,17 +5,17 @@ function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        {/* Logo */}
+       
         <div className="navbar-logo">EngJobHub</div>
 
-        {/* Links */}
+        
         <div className="navbar-links">
           <Link to="/" className="nav-link">Home</Link>
           <Link to="/opportunities" className="nav-link">Opportunities</Link>
           <Link to="/services" className="nav-link">Services</Link>
         </div>
 
-        {/* Search bar */}
+        
         <div className="navbar-search">
           <input
             type="text"
@@ -25,7 +25,7 @@ function Navbar() {
           <button className="search-button">🔍</button>
         </div>
 
-        {/* Register */}
+        
         <Link to="/auth" className="register-button">
           Register
         </Link>
