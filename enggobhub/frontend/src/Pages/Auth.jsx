@@ -3,6 +3,7 @@ import TermsModel from "../Components/TermsModel";
 import "./Auth.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 function Auth() {
   const [role, setRole] = useState("Student");
@@ -11,6 +12,7 @@ function Auth() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showTermsModel, setShowTermsModel] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
   const handleRoleToggle = (roleType) => setRole(roleType);
@@ -24,8 +26,10 @@ function Auth() {
 
     if (isLogin) {
       const response = await axios.post("http://localhost:5000/api/auth/login", formData);
-      if (response?.data?.token) localStorage.setItem("token", response.data.token);
-      navigate(response?.data?.user?.role === "educator" ? "/educator" : "/student");
+      if (response?.data?.token) {
+        login(response.data.user, response.data.token);
+        navigate(response?.data?.user?.role === "educator" ? "/educator" : "/student");
+      }
     } else {
       const payload = { ...formData, role: role.toLowerCase() };
       const response = await axios.post("http://localhost:5000/api/auth/register", payload);

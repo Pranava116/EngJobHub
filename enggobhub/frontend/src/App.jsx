@@ -4,6 +4,8 @@ import Auth from "./Pages/Auth";
 import Educator from "./Pages/Educator";
 import Student from "./Pages/Student";
 import Home from "./Pages/HomePage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider } from "./contexts/AuthContext";
 
 function Layout() {
   return (
@@ -11,8 +13,16 @@ function Layout() {
       <Routes>
         <Route path="/auth" element={<Auth />} />
         <Route path="/" element={<Home/>} />
-        <Route path="/student" element={<Student/>} />
-        <Route path="/educator" element={<Educator />} />
+        <Route path="/student" element={
+          <ProtectedRoute requiredRole="student">
+            <Student/>
+          </ProtectedRoute>
+        } />
+        <Route path="/educator" element={
+          <ProtectedRoute requiredRole="educator">
+            <Educator />
+          </ProtectedRoute>
+        } />
       </Routes>
     </>
   );
@@ -20,9 +30,11 @@ function Layout() {
 
 function App() {
   return (
-    <Router>
-      <Layout />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Layout />
+      </Router>
+    </AuthProvider>
   );
 }
 

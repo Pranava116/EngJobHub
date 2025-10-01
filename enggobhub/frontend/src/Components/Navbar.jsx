@@ -1,7 +1,18 @@
 import { Link } from "react-router-dom";
 import "./Navbar.css";
-
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";    
 function Navbar() {
+  const navigate = useNavigate();
+  const { logout, isAuthenticated } = useAuth();
+
+  const handleLogout = () => {
+    navigate("/");
+    setTimeout(() => {
+      logout();
+    }, 100);
+  };
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -24,11 +35,15 @@ function Navbar() {
           />
           <button className="search-button">🔍</button>
         </div>
-
-        
-        <Link to="/auth" className="register-button">
-          Register
-        </Link>
+        {isAuthenticated ? (
+          <button className="register-button" onClick={handleLogout}>
+            Logout
+          </button>
+        ) : (
+          <Link to="/auth" className="register-button">
+            Register
+          </Link>
+        )}
       </div>
     </nav>
   );

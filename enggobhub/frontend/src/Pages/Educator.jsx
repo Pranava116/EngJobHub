@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./Educator.css"; 
-import Navbar2 from "../Components/Navbar2";
+
+import Navbar from "../Components/Navbar";
 
 function Educator() {
   const [showForm, setShowForm] = useState(false);
@@ -28,7 +29,7 @@ function Educator() {
 
   return (
     <>
-    <Navbar2/>
+    <Navbar/>
     <div className="educator-container">
       {!showForm ? (
         <button className="add-btn" onClick={() => setShowForm(true)}>
