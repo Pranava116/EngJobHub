@@ -6,7 +6,7 @@ function Card({ name, description, image }) {
 
   return (
     <div className="card" onClick={() => setShowDescription(!showDescription)}>
-      {image && <img src={URL.createObjectURL(image)} alt={name} className="card-image" />}
+      {image && <img src={image} alt={name} className="card-image" />}
       <h3 className="card-title">{name}</h3>
       {showDescription && <p className="card-description">{description}</p>}
     </div>
