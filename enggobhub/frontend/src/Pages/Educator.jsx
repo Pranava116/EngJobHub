@@ -11,6 +11,14 @@ function Educator() {
     image: null,
   });
 
+  const fileToBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image") {
@@ -20,11 +28,54 @@ function Educator() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data Submitted:", formData);
-    alert("Form submitted successfully!");
-    setShowForm(false);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login as an educator to submit a course.");
+        return;
+      }
+
+      const imageBase64 = formData.image ? await fileToBase64(formData.image) : null;
+
+      const payload = {
+        courseId: `C${Date.now()}`,
+        courseName: formData.name,
+        courseContents: [
+          {
+            name: formData.name,
+            description: formData.description,
+            image: imageBase64,
+          },
+        ],
+        category: "general",
+        difficulty: "beginner",
+        duration: 0,
+      };
+
+      const res = await fetch("http://localhost:5000/api/courses", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        alert(err.message || "Failed to create course");
+        return;
+      }
+
+      alert("Course created successfully!");
+      setShowForm(false);
+      setFormData({ name: "", description: "", image: null });
+    } catch (error) {
+      console.error("Create course failed:", error);
+      alert("Something went wrong while creating the course.");
+    }
   };
 
   return (
