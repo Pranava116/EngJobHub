@@ -14,7 +14,9 @@ function Auth() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
   const handleRoleToggle = (roleType) => setRole(roleType);
 
   const handleSubmit = async (e) => {
@@ -24,16 +26,25 @@ function Auth() {
       return;
     }
 
-    if (isLogin) {
-      const response = await axios.post("http://localhost:5000/api/auth/login", formData);
-      if (response?.data?.token) {
-        login(response.data.user, response.data.token);
-        navigate(response?.data?.user?.role === "educator" ? "/educator" : "/student");
+    try {
+      if (isLogin) {
+        const response = await axios.post("http://localhost:5000/api/auth/login", formData);
+        if (response?.data?.token) {
+          login(response.data.user, response.data.token);
+
+          const userRole = response?.data?.user?.role;
+          if (userRole === "educator") navigate("/educator");
+          else if (userRole === "hr") navigate("/hr");
+          else navigate("/student");
+        }
+      } else {
+        const payload = { ...formData, role: role.toLowerCase() };
+        const response = await axios.post("http://localhost:5000/api/auth/register", payload);
+        if (response?.data) setIsLogin(true);
       }
-    } else {
-      const payload = { ...formData, role: role.toLowerCase() };
-      const response = await axios.post("http://localhost:5000/api/auth/register", payload);
-      if (response?.data) setIsLogin(true);
+    } catch (error) {
+      console.error("Auth Error:", error);
+      alert("Something went wrong. Please try again.");
     }
   };
 
@@ -44,50 +55,112 @@ function Auth() {
 
         {!isLogin && (
           <div className="role-toggle">
-            <button type="button" className={role === "Student" ? "active" : ""} onClick={() => handleRoleToggle("Student")}>Student</button>
-            <button type="button" className={role === "Educator" ? "active" : ""} onClick={() => handleRoleToggle("Educator")}>Educator</button>
+            <button
+              type="button"
+              className={role === "Student" ? "active" : ""}
+              onClick={() => handleRoleToggle("Student")}
+            >
+              Student
+            </button>
+            <button
+              type="button"
+              className={role === "Educator" ? "active" : ""}
+              onClick={() => handleRoleToggle("Educator")}
+            >
+              Educator
+            </button>
+            <button
+              type="button"
+              className={role === "HR" ? "active" : ""}
+              onClick={() => handleRoleToggle("HR")}
+            >
+              HR
+            </button>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="auth-form">
           {!isLogin && (
             <div className="form-group">
-              <input type="text" name="name" placeholder="Full Name" value={formData.name} onChange={handleChange} required />
+              <input
+                type="text"
+                name="name"
+                placeholder="Full Name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
             </div>
           )}
 
           <div className="form-group">
-            <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleChange} required />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <div className="form-group">
-            <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
           </div>
 
           {!isLogin && (
             <div className="form-group">
-              <button type="button" className="terms-btn" onClick={() => setShowTermsModel(true)}>
+              <button
+                type="button"
+                className="terms-btn"
+                onClick={() => setShowTermsModel(true)}
+              >
                 Read & Accept Terms & Conditions
               </button>
-              {termsAccepted && <span style={{ marginLeft: "10px", color: "green" }}>✔ Accepted</span>}
+              {termsAccepted && (
+                <span style={{ marginLeft: "10px", color: "green" }}>✔ Accepted</span>
+              )}
             </div>
           )}
 
-          <button type="submit" className="submit-btn" disabled={!isLogin && !termsAccepted}>
+          <button
+            type="submit"
+            className="submit-btn"
+            disabled={!isLogin && !termsAccepted}
+          >
             {isLogin ? "Login" : "Register"}
           </button>
         </form>
 
         <p className="switch-auth">
           {isLogin ? (
-            <>Don’t have an account? <span onClick={() => setIsLogin(false)}>Register</span></>
+            <>
+              Don’t have an account?{" "}
+              <span onClick={() => setIsLogin(false)}>Register</span>
+            </>
           ) : (
-            <>Already have an account? <span onClick={() => setIsLogin(true)}>Login</span></>
+            <>
+              Already have an account?{" "}
+              <span onClick={() => setIsLogin(true)}>Login</span>
+            </>
           )}
         </p>
       </div>
 
-      <TermsModel isOpen={showTermsModel} onClose={() => { setShowTermsModel(false); setTermsAccepted(true); }} />
+      <TermsModel
+        isOpen={showTermsModel}
+        onClose={() => {
+          setShowTermsModel(false);
+          setTermsAccepted(true);
+        }}
+      />
     </div>
   );
 }
