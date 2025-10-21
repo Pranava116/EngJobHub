@@ -6,7 +6,11 @@ const jobSchema = new mongoose.Schema({
 	location: { type: String, required: true, trim: true },
 	type: { type: String, enum: ['full-time', 'part-time', 'contract', 'internship'], required: true },
 	salary: { type: Number },
-	postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
+	postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+	applicants: [{ 
+		type: mongoose.Schema.Types.ObjectId, 
+		ref: 'User' 
+	}]
 }, { timestamps: true });
 
 jobSchema.index({ company: 'text', description: 'text', location: 'text' });

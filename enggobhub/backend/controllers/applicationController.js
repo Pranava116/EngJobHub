@@ -30,6 +30,11 @@ export const applyForJob = async (req, res) => {
 			resume : resume
 		});
 
+		// Add applicant to job's applicants array
+		await Job.findByIdAndUpdate(jobId, {
+			$addToSet: { applicants: req.user.id }
+		});
+
 		await application.populate('job', 'title company location');
 		return res.status(201).json({ 
 			message: 'Application submitted successfully', 

@@ -27,7 +27,9 @@ export const listJobs = async (req, res) => {
 		if (q) {
 			filter = { $text: { $search: q } };
 		}
-		const jobs = await Job.find(filter).sort({ createdAt: -1 }).populate('postedBy', 'name email role');
+		const jobs = await Job.find(filter).sort({ createdAt: -1 })
+			.populate('postedBy', 'name email role')
+			.populate('applicants', 'name email');
 		return res.json(jobs);
 	} catch (error) {
 		return res.status(500).json({ message: 'Failed to list jobs', error: error.message });
