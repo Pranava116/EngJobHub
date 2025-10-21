@@ -4,7 +4,7 @@ import Auth from "./Pages/Auth";
 import Educator from "./Pages/Educator";
 import Student from "./Pages/Student";
 import Home from "./Pages/HomePage";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./Components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 
 function Layout() {
