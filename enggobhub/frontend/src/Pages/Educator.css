@@ -1,89 +1,257 @@
-/* Educator Page Container */
+/* --- Global Container --- */
 .educator-container {
-  padding: 40px 20px;
-  display: flex;
-  margin-top: 50px;
-  flex-direction: column;
-  align-items: center;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f0f2f5;
-  min-height: 100vh;
+  max-width: 1200px;
+  margin: 60px auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: #333;
 }
 
-/* Add Button (similar to Register button in Navbar) */
-.add-btn {
-  padding: 12px 26px;
-  background: linear-gradient(90deg, #2563eb, #1e40af);
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
+/* --- Navigation Tabs --- */
+.educator-nav {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  border-bottom: 2px solid #eeeeee;
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+}
+
+.nav-btn {
+  background: black;
+  color: blue;
   border: none;
-  border-radius: 8px;
+  padding: 10px 24px;
+  border-radius: 25px;
+  font-size: 15px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 3px 6px rgba(37, 99, 235, 0.2);
 }
 
-.add-btn:hover {
-  background: linear-gradient(90deg, #1e40af, #1d4ed8);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 10px rgba(37, 99, 235, 0.3);
+.nav-btn:hover {
+  background: #007bff;
+  color:green;
 }
 
-/* Educator Form (card style like Auth box) */
+.nav-btn.active {
+  background: #007bff;
+  color: black;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+/* --- Section Header --- */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.section-header h2 {
+  font-size: 22px;
+  color: #222;
+  font-weight: 600;
+}
+
+.add-btn, .back-btn, .submit-btn {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.add-btn:hover,
+.back-btn:hover,
+.submit-btn:hover {
+  background: #0056b3;
+}
+
+/* --- Loading + No Courses --- */
+.loading, .no-courses {
+  text-align: center;
+  font-size: 16px;
+  padding: 40px 0;
+  color: #666;
+}
+
+.no-courses button {
+  margin-top: 15px;
+}
+
+/* --- Courses Grid --- */
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.course-card {
+  background: #fefefe;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.course-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.course-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.course-header h3 {
+  font-size: 18px;
+  color: #222;
+  margin: 0;
+}
+
+.difficulty-badge {
+  font-size: 13px;
+  padding: 5px 10px;
+  border-radius: 12px;
+  text-transform: capitalize;
+}
+
+.difficulty-badge.beginner {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.difficulty-badge.intermediate {
+  background: #fff8e1;
+  color: #f9a825;
+}
+
+.difficulty-badge.advanced {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.course-description {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.course-media img,
+.course-media video {
+  width: 100%;
+  border-radius: 8px;
+  margin-top: 10px;
+  max-height: 180px;
+  object-fit: cover;
+}
+
+.course-meta {
+  font-size: 14px;
+  color: #666;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.course-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
+}
+
+.delete-btn {
+  background: #f44336;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.delete-btn:hover {
+  background: #c62828;
+}
+
+/* --- Form Styles --- */
 .educator-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  max-width: 450px;
+  gap: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
   width: 100%;
-  margin-top: 25px;
-  background: #ffffff;
-  padding: 30px 25px;
-  border-radius: 10px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-}
-
-/* Inputs & Textarea */
-.educator-form input[type="text"],
-.educator-form textarea,
-.educator-form input[type="file"] {
-  padding: 12px;
-  border-radius: 6px;
+  padding: 10px 12px;
   border: 1px solid #ccc;
-  font-size: 14px;
-  outline: none;
-  transition: border 0.3s, box-shadow 0.3s;
-}
-
-.educator-form input[type="text"]:focus,
-.educator-form textarea:focus,
-.educator-form input[type="file"]:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 6px rgba(37, 117, 252, 0.3);
-}
-
-.educator-form textarea {
-  resize: vertical;
-  min-height: 90px;
-}
-
-/* Submit Button (green theme aligned with your design, but styled like Auth buttons) */
-.submit-btn {
-  padding: 12px 24px;
-  background: linear-gradient(90deg, #16a34a, #15803d); /* green gradient */
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
   border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 3px 6px rgba(22, 163, 74, 0.2);
+  font-size: 15px;
+  font-family: inherit;
+  background: #fdfdfd;
+  transition: border 0.3s ease;
 }
 
-.submit-btn:hover {
-  background: linear-gradient(90deg, #15803d, #166534);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 10px rgba(22, 163, 74, 0.3);
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* --- Submit Button --- */
+.submit-btn {
+  align-self: flex-end;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 10px;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .educator-container {
+    padding: 20px;
+  }
+
+  .educator-nav {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
 }

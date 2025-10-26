@@ -10,11 +10,21 @@ export const createCourse = async (req, res) => {
     const courseId = `C${Date.now()}`;
 
     let imageUrl = null;
+    let videoUrl = null;
+    
     if (req.files?.image) {
       const result = await cloudinary.uploader.upload(req.files.image.tempFilePath, {
         folder: 'course_contents',
       });
       imageUrl = result.secure_url;
+    }
+
+    if (req.files?.video) {
+      const result = await cloudinary.uploader.upload(req.files.video.tempFilePath, {
+        folder: 'course_videos',
+        resource_type: 'video',
+      });
+      videoUrl = result.secure_url;
     }
 
     const course = new Course({
@@ -26,6 +36,7 @@ export const createCourse = async (req, res) => {
           name: courseName,
           description,
           image: imageUrl,
+          video: videoUrl,
         },
       ],
       category: category || 'general',
@@ -85,6 +96,8 @@ export const updateCourse = async (req, res) => {
 
     
     let imageUrl = course.courseContents[0]?.image || null;
+    let videoUrl = course.courseContents[0]?.video || null;
+    
     if (req.files?.image) {
       const result = await cloudinary.uploader.upload(req.files.image.tempFilePath, {
         folder: 'course_contents',
@@ -92,11 +105,20 @@ export const updateCourse = async (req, res) => {
       imageUrl = result.secure_url;
     }
 
+    if (req.files?.video) {
+      const result = await cloudinary.uploader.upload(req.files.video.tempFilePath, {
+        folder: 'course_videos',
+        resource_type: 'video',
+      });
+      videoUrl = result.secure_url;
+    }
+
     course.courseContents = [
       {
         name: courseName || course.courseContents[0].name,
         description: description || course.courseContents[0].description,
         image: imageUrl,
+        video: videoUrl,
       },
     ];
     if (category) course.category = category;
@@ -160,5 +182,33 @@ export const getMyEnrolledCourses = async (req, res) => {
     res.json(courses);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch enrolled courses', error: error.message });
+  }
+};
+
+
+export const unenrollFromCourse = async (req, res) => {
+  try {
+    const course = await Course.findById(req.params.id);
+    if (!course) return res.status(404).json({ message: 'Course not found' });
+
+    const isEnrolled = course.enrolledStudents.some(
+      (studentId) => studentId.toString() === req.user.id
+    );
+    if (!isEnrolled) return res.status(409).json({ message: 'Not enrolled in this course' });
+
+    course.enrolledStudents = course.enrolledStudents.filter(
+      (studentId) => studentId.toString() !== req.user.id
+    );
+    await course.save();
+
+    res.json({
+      message: 'Successfully unenrolled from course',
+      course: {
+        id: course._id,
+        courseName: course.courseName,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to unenroll from course', error: error.message });
   }
 };
