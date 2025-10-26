@@ -3,6 +3,7 @@ import Navbar from "./Components/Navbar";
 import Auth from "./Pages/Auth";
 import Educator from "./Pages/Educator";
 import Student from "./Pages/Student";
+import HR from "./Pages/HR";
 import Home from "./Pages/HomePage";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -22,7 +23,13 @@ function Layout() {
           <ProtectedRoute requiredRole="educator">
             <Educator />
           </ProtectedRoute>
-        } />
+          } />
+          <Route  path="/hr" element={
+            <ProtectedRoute requiredRole="hr">
+              <HR />
+          </ProtectedRoute>
+          }/>
+
       </Routes>
     </>
   );
