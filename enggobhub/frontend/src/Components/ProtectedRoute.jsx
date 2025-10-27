@@ -6,17 +6,7 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
   const { user, loading, isAuthenticated } = useAuth();
 
   if (loading) {
-    return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh',
-        fontSize: '18px'
-      }}>
-        Loading...
-      </div>
-    );
+    return <div className="loading">Loading...</div>;
   }
 
   if (!isAuthenticated) {
@@ -24,7 +14,11 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
   }
 
   if (requiredRole && user?.role !== requiredRole) {
-    const redirectPath = user?.role === 'educator' ? '/educator' : '/student';
+    let redirectPath = '/';
+    if (user?.role === 'educator') redirectPath = '/educator';
+    else if (user?.role === 'student') redirectPath = '/student';
+    else if (user?.role === 'hr') redirectPath = '/hr';
+
     return <Navigate to={redirectPath} replace />;
   }
 
