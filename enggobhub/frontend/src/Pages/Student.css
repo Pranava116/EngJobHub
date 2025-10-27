@@ -276,6 +276,38 @@
   font-size: 0.9rem;
 }
 
+/* Course Image */
+.course-image-container {
+  margin-bottom: 15px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.course-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.course-image:hover {
+  transform: scale(1.05);
+}
+
+/* Course Description */
+.course-description {
+  color: #555;
+  margin-bottom: 15px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .course-meta {
   display: flex;
   justify-content: space-between;

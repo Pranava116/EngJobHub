@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import "./Student.css";
 
 export default function Student() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +23,7 @@ export default function Student() {
   const fetchCourses = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/courses', {
+      const response = await fetch('http://localhost:5000/api/courses', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -40,7 +42,7 @@ export default function Student() {
   const fetchEnrolledCourses = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/courses/student/my-courses', {
+      const response = await fetch('http://localhost:5000/api/courses/student/my-courses', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -59,7 +61,7 @@ export default function Student() {
   const enrollInCourse = async (courseId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/courses/${courseId}/enroll`, {
+      const response = await fetch(`http://localhost:5000/api/courses/${courseId}/enroll`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -94,6 +96,11 @@ export default function Student() {
   // Check if student is enrolled in a course
   const isEnrolled = (courseId) => {
     return enrolledCourses.some(course => course._id === courseId);
+  };
+
+  // Navigate to course details
+  const viewCourseDetails = (courseId) => {
+    navigate(`/course/${courseId}`);
   };
 
   if (loading) {
@@ -172,6 +179,24 @@ export default function Student() {
                     </span>
                   </div>
                   
+                  {/* Course Image */}
+                  {course.courseContents && course.courseContents[0]?.image && (
+                    <div className="course-image-container">
+                      <img 
+                        src={course.courseContents[0].image} 
+                        alt={course.courseName}
+                        className="course-image"
+                      />
+                    </div>
+                  )}
+                  
+                  {/* Course Description */}
+                  {course.courseContents && course.courseContents[0]?.description && (
+                    <p className="course-description">
+                      {course.courseContents[0].description}
+                    </p>
+                  )}
+                  
                   <p className="course-educator">
                     👨‍🏫 {course.educator?.name || 'Unknown Educator'}
                   </p>
@@ -182,6 +207,7 @@ export default function Student() {
                   
                   <div className="course-meta">
                     <span><strong>Duration:</strong> {course.duration} weeks</span>
+                    <span><strong>Students:</strong> {course.enrolledStudents?.length || 0}</span>
                     <span><strong>Rating:</strong> ⭐ {course.rating || 'N/A'}</span>
                   </div>
                   
@@ -195,10 +221,15 @@ export default function Student() {
                         className="enroll-btn"
                         onClick={() => enrollInCourse(course._id)}
                       >
-                        Enroll Now
+                        🎓 Enroll Now
                       </button>
                     )}
-                    <button className="view-btn">View Details</button>
+                    <button 
+                      className="view-btn"
+                      onClick={() => viewCourseDetails(course._id)}
+                    >
+                      View Details
+                    </button>
                   </div>
                 </div>
               ))
@@ -218,6 +249,24 @@ export default function Student() {
                     <span className="enrolled-badge">✅ Enrolled</span>
                   </div>
                   
+                  {/* Course Image */}
+                  {course.courseContents && course.courseContents[0]?.image && (
+                    <div className="course-image-container">
+                      <img 
+                        src={course.courseContents[0].image} 
+                        alt={course.courseName}
+                        className="course-image"
+                      />
+                    </div>
+                  )}
+                  
+                  {/* Course Description */}
+                  {course.courseContents && course.courseContents[0]?.description && (
+                    <p className="course-description">
+                      {course.courseContents[0].description}
+                    </p>
+                  )}
+                  
                   <p className="course-educator">
                     👨‍🏫 {course.educator?.name || 'Unknown Educator'}
                   </p>
@@ -228,12 +277,18 @@ export default function Student() {
                   
                   <div className="course-meta">
                     <span><strong>Duration:</strong> {course.duration} weeks</span>
+                    <span><strong>Students:</strong> {course.enrolledStudents?.length || 0}</span>
                     <span><strong>Progress:</strong> 0%</span>
                   </div>
                   
                   <div className="course-actions">
-                    <button className="continue-btn">Continue Learning</button>
-                    <button className="view-btn">View Details</button>
+                    <button className="continue-btn">📚 Continue Learning</button>
+                    <button 
+                      className="view-btn"
+                      onClick={() => viewCourseDetails(course._id)}
+                    >
+                      View Details
+                    </button>
                   </div>
                 </div>
               ))

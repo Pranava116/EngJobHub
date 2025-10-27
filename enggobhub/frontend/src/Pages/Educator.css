@@ -169,7 +169,24 @@
 .course-actions {
   display: flex;
   justify-content: flex-end;
+  gap: 10px;
   margin-top: 15px;
+}
+
+.view-details-btn {
+  background: #0a66c2;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.view-details-btn:hover {
+  background: #084a8a;
+  transform: translateY(-1px);
 }
 
 .delete-btn {

@@ -4,6 +4,7 @@ import Auth from "./Pages/Auth";
 import Educator from "./Pages/Educator";
 import Student from "./Pages/Student";
 import Home from "./Pages/HomePage";
+import CourseDetails from "./Pages/CourseDetails";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -13,6 +14,7 @@ function Layout() {
       <Routes>
         <Route path="/auth" element={<Auth />} />
         <Route path="/" element={<Home/>} />
+        <Route path="/course/:courseId" element={<CourseDetails />} />
         <Route path="/student" element={
           <ProtectedRoute requiredRole="student">
             <Student/>

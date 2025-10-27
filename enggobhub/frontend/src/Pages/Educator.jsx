@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Educator.css";
 import Navbar from "../Components/Navbar";
 
 function Educator() {
+  const navigate = useNavigate();
   const [showForm, setShowForm] = useState(false);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -83,6 +85,11 @@ function Educator() {
   useEffect(() => {
     fetchMyCourses();
   }, []);
+
+  // Navigate to course details
+  const viewCourseDetails = (courseId) => {
+    navigate(`/course/${courseId}`);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -230,6 +237,12 @@ function Educator() {
                       </div>
 
                       <div className="course-actions">
+                        <button
+                          className="view-details-btn"
+                          onClick={() => viewCourseDetails(course._id)}
+                        >
+                          👁️ View Details
+                        </button>
                         <button
                           className="delete-btn"
                           onClick={() => deleteCourse(course._id)}
