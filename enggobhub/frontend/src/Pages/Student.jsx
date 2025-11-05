@@ -138,35 +138,47 @@ export default function Student() {
   };
 
   const applyToJob = async (jobId) => {
-    try {
-      setJobApplyState((prev) => ({ ...prev, [jobId]: 'applying' }));
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/applications/apply', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ jobId, resume: resumeInput || undefined })
-      });
-      if (response.ok) {
-        alert('Application submitted successfully');
-        await fetchJobs();
-        setJobApplyState((prev) => ({ ...prev, [jobId]: 'applied' }));
-        setShowApplyModal(false);
-        setSelectedJob(null);
-        setResumeInput('');
-      } else {
-        const error = await response.json();
-        alert(error.message || 'Failed to apply for job');
-        setJobApplyState((prev) => ({ ...prev, [jobId]: 'idle' }));
-      }
-    } catch (err) {
-      console.error('Error applying to job:', err);
-      alert('Failed to apply for job');
-      setJobApplyState((prev) => ({ ...prev, [jobId]: 'idle' }));
+  if (!resumeInput) {
+    alert("Please upload your resume before submitting.");
+    return;
+  }
+
+  try {
+    setJobApplyState((prev) => ({ ...prev, [jobId]: "applying" }));
+
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    formData.append("jobId", jobId);
+    formData.append("resume", resumeInput);
+
+    const res = await fetch(`http://localhost:5000/api/applications/jobs/${jobId}/apply`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData, // ✅ no Content-Type header, browser sets it automatically
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message || "Failed to apply for job");
+    } else {
+      alert("✅ Successfully applied for the job!");
+      setShowApplyModal(false);
+      setResumeInput("");
+      setSelectedJob(null);
+      await fetchJobs();
     }
-  };
+
+    setJobApplyState((prev) => ({ ...prev, [jobId]: "idle" }));
+  } catch (err) {
+    console.error("Error applying for job:", err);
+    alert("Something went wrong while applying.");
+    setJobApplyState((prev) => ({ ...prev, [jobId]: "idle" }));
+  }
+};
+
 
   const openApplyModal = (job) => {
     setSelectedJob(job);
@@ -444,16 +456,15 @@ export default function Student() {
             </div>
             <div className="modal-body">
               <div className="form-group">
-                <label htmlFor="resumeInput">Resume (paste text or URL)</label>
-                <textarea
-                  id="resumeInput"
-                  className="textarea"
-                  rows={6}
-                  placeholder="Paste your resume text or a link to your resume"
-                  value={resumeInput}
-                  onChange={(e) => setResumeInput(e.target.value)}
+                <label htmlFor="resumeFile">Upload Resume (PDF only)</label>
+                <input
+                  type="file"
+                  id="resumeFile"
+                  accept="application/pdf"
+                  onChange={(e) => setResumeInput(e.target.files[0])}
                 />
               </div>
+
             </div>
             <div className="modal-footer">
               <button className="view-btn" onClick={closeApplyModal}>Cancel</button>

@@ -1,6 +1,5 @@
 import Jobs from '../model/Jobs.js';
 
-// Create a new job
 export const createJob = async (req, res) => {
   try {
     const { company, description, location, type, salary } = req.body;
