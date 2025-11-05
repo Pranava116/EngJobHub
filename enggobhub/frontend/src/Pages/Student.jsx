@@ -9,6 +9,10 @@ export default function Student() {
   const [courses, setCourses] = useState([]);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [jobs, setJobs] = useState([]);
+  const [externalJobs, setExternalJobs] = useState([]);
+  const [jobQuery, setJobQuery] = useState('software engineer');
+  const [jobLocation, setJobLocation] = useState('India');
+  const [hasSearchedExternal, setHasSearchedExternal] = useState(false);
   const [jobApplyState, setJobApplyState] = useState({});
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
@@ -78,6 +82,28 @@ export default function Student() {
       }
     } catch (err) {
       console.error('Error fetching jobs:', err);
+    }
+  };
+
+  // Fetch Indeed external jobs
+  const fetchExternalJobs = async (opts = {}) => {
+    try {
+      const token = localStorage.getItem('token');
+      const q = encodeURIComponent(opts.query ?? jobQuery);
+      const loc = encodeURIComponent(opts.location ?? jobLocation);
+      const response = await fetch(`http://localhost:5000/api/external-jobs/indeed?query=${q}&location=${loc}&page=1`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setExternalJobs(Array.isArray(data?.jobs) ? data.jobs : []);
+        setHasSearchedExternal(true);
+      }
+    } catch (err) {
+      console.error('Error fetching external jobs:', err);
     }
   };
 
@@ -250,7 +276,7 @@ export default function Student() {
           <div className="course-count">
             {activeTab === 'all-courses' && `${courses.length} courses`}
             {activeTab === 'enrolled' && `${enrolledCourses.length} courses`}
-            {activeTab === 'jobs' && `${jobs.length} jobs`}
+            {activeTab === 'jobs' && `${jobs.length + (hasSearchedExternal ? externalJobs.length : 0)} jobs`}
           </div>
         </div>
 
@@ -393,41 +419,100 @@ export default function Student() {
           </div>
         ) : (
           <div className="course-grid">
-            {jobs.length > 0 ? (
-              jobs.map((job) => (
-                <div key={job._id} className="course-card">
-                  <div className="course-header">
-                    <h3 className="course-title">{job.company}</h3>
-                    <span className="enrolled-badge">{job.type}</span>
-                  </div>
+            {/* Search/filter for external jobs */}
+            <div className="course-card" style={{ gridColumn: '1 / -1' }}>
+              <div className="course-header">
+                <h3 className="course-title">Find External Jobs (Indeed)</h3>
+                <span className="enrolled-badge">External</span>
+              </div>
+              <div className="course-actions" style={{ gap: '8px', flexWrap: 'wrap' }}>
+                <input
+                  type="text"
+                  value={jobQuery}
+                  onChange={(e) => setJobQuery(e.target.value)}
+                  placeholder="Role or keywords (e.g., React, Intern)"
+                  className="view-btn"
+                  style={{ flex: '1 1 240px', textAlign: 'left' }}
+                />
+                <input
+                  type="text"
+                  value={jobLocation}
+                  onChange={(e) => setJobLocation(e.target.value)}
+                  placeholder="Location (e.g., India, Remote)"
+                  className="view-btn"
+                  style={{ flex: '1 1 200px', textAlign: 'left' }}
+                />
+                <button className="enroll-btn" onClick={() => fetchExternalJobs({ query: jobQuery, location: jobLocation })}>
+                  🔎 Search Indeed
+                </button>
+              </div>
+            </div>
 
-                  <p className="course-description">{job.description}</p>
-
-                  <div className="course-meta">
-                    <span><strong>Location:</strong> {job.location}</span>
-                    <span><strong>Salary:</strong> {job.salary ? `₹${job.salary}` : 'N/A'}</span>
-                    <span><strong>Posted:</strong> {new Date(job.createdAt).toLocaleDateString()}</span>
-                  </div>
-
-                  <div className="course-actions">
-                    {hasApplied(job) || jobApplyState[job._id] === 'applied' ? (
-                      <button className="enrolled-btn" disabled>
-                        ✅ Applied
-                      </button>
-                    ) : (
-                      <button 
-                        className="enroll-btn"
-                        onClick={() => openApplyModal(job)}
-                        disabled={jobApplyState[job._id] === 'applying'}
-                      >
-                        Apply
-                      </button>
-                    )}
-                  </div>
+            {/* Internal jobs */}
+            {jobs.length > 0 && jobs.map((job) => (
+              <div key={job._id} className="course-card">
+                <div className="course-header">
+                  <h3 className="course-title">{job.company}</h3>
+                  <span className="enrolled-badge">{job.type}</span>
                 </div>
-              ))
-            ) : (
-              <div className="no-courses">
+
+                <p className="course-description">{job.description}</p>
+
+                <div className="course-meta">
+                  <span><strong>Location:</strong> {job.location}</span>
+                  <span><strong>Salary:</strong> {job.salary ? `₹${job.salary}` : 'N/A'}</span>
+                  <span><strong>Posted:</strong> {new Date(job.createdAt).toLocaleDateString()}</span>
+                </div>
+
+                <div className="course-actions">
+                  {hasApplied(job) || jobApplyState[job._id] === 'applied' ? (
+                    <button className="enrolled-btn" disabled>
+                      ✅ Applied
+                    </button>
+                  ) : (
+                    <button
+                      className="enroll-btn"
+                      onClick={() => openApplyModal(job)}
+                      disabled={jobApplyState[job._id] === 'applying'}
+                    >
+                      Apply
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {/* External Indeed jobs (only after search) */}
+            {hasSearchedExternal && externalJobs.length > 0 && externalJobs.map((job) => (
+              <div key={job.id} className="course-card">
+                <div className="course-header">
+                  <h3 className="course-title">{job.title}</h3>
+                  <span className="enrolled-badge">Source: {job.source || 'Indeed'}</span>
+                </div>
+
+                <p className="course-description">{job.company} {job.location ? `• ${job.location}` : ''}</p>
+
+                <div className="course-meta">
+                  <span><strong>Remote:</strong> {job.remote ? 'Yes' : 'No'}</span>
+                  <span><strong>Salary:</strong> {job.salary ? job.salary : 'N/A'}</span>
+                  <span><strong>Posted:</strong> {job.postedAt ? new Date(job.postedAt).toLocaleDateString() : 'N/A'}</span>
+                </div>
+
+                <div className="course-actions">
+                  <a
+                    href={job.applyLink || '#'}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="view-btn"
+                  >
+                    View on Indeed
+                  </a>
+                </div>
+              </div>
+            ))}
+
+            {jobs.length === 0 && (!hasSearchedExternal || externalJobs.length === 0) && (
+              <div className="no-courses" style={{ gridColumn: '1 / -1' }}>
                 <p>No jobs available at the moment.</p>
               </div>
             )}

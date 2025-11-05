@@ -6,6 +6,7 @@ import authRoutes from './routes/authRoutes.js';
 import courseRoutes from './routes/courseRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
 import applicationRoutes from './routes/applicationRoutes.js';
+import externalJobRoutes from './routes/externalJobRoutes.js';
 
 import { upload } from './middleware/upload.js';
 
@@ -22,6 +23,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes); 
 app.use('/api/jobs', jobRoutes);
 app.use('/api/applications', applicationRoutes);
+app.use('/api/external-jobs', externalJobRoutes);
 async function start() {
   try {
     if (!process.env.DB_URI) throw new Error('DB_URI not set');
