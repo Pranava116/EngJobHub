@@ -8,6 +8,11 @@ export default function Student() {
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const [jobs, setJobs] = useState([]);
+  const [jobApplyState, setJobApplyState] = useState({});
+  const [showApplyModal, setShowApplyModal] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [resumeInput, setResumeInput] = useState('');
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all-courses');
   const [enrollmentStatus, setEnrollmentStatus] = useState({});
@@ -57,6 +62,25 @@ export default function Student() {
     }
   };
 
+  // Fetch all jobs
+  const fetchJobs = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/jobs', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setJobs(data);
+      }
+    } catch (err) {
+      console.error('Error fetching jobs:', err);
+    }
+  };
+
   // Enroll in a course
   const enrollInCourse = async (courseId) => {
     try {
@@ -87,7 +111,7 @@ export default function Student() {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      await Promise.all([fetchCourses(), fetchEnrolledCourses()]);
+      await Promise.all([fetchCourses(), fetchEnrolledCourses(), fetchJobs()]);
       setLoading(false);
     };
     loadData();
@@ -101,6 +125,59 @@ export default function Student() {
   // Navigate to course details
   const viewCourseDetails = (courseId) => {
     navigate(`/course/${courseId}`);
+  };
+
+  // Job helpers
+  const hasApplied = (job) => {
+    if (!user?._id && !user?.id) return false;
+    const currentUserId = user?._id || user?.id;
+    return Array.isArray(job.applicants) && job.applicants.some((a) => {
+      if (typeof a === 'string') return a === currentUserId;
+      return a?._id === currentUserId;
+    });
+  };
+
+  const applyToJob = async (jobId) => {
+    try {
+      setJobApplyState((prev) => ({ ...prev, [jobId]: 'applying' }));
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/applications/apply', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ jobId, resume: resumeInput || undefined })
+      });
+      if (response.ok) {
+        alert('Application submitted successfully');
+        await fetchJobs();
+        setJobApplyState((prev) => ({ ...prev, [jobId]: 'applied' }));
+        setShowApplyModal(false);
+        setSelectedJob(null);
+        setResumeInput('');
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Failed to apply for job');
+        setJobApplyState((prev) => ({ ...prev, [jobId]: 'idle' }));
+      }
+    } catch (err) {
+      console.error('Error applying to job:', err);
+      alert('Failed to apply for job');
+      setJobApplyState((prev) => ({ ...prev, [jobId]: 'idle' }));
+    }
+  };
+
+  const openApplyModal = (job) => {
+    setSelectedJob(job);
+    setResumeInput('');
+    setShowApplyModal(true);
+  };
+
+  const closeApplyModal = () => {
+    setShowApplyModal(false);
+    setSelectedJob(null);
+    setResumeInput('');
   };
 
   if (loading) {
@@ -153,6 +230,12 @@ export default function Student() {
           >
             ✅ My Courses
           </button>
+          <button 
+            className={`nav-btn ${activeTab === 'jobs' ? 'active' : ''}`}
+            onClick={() => setActiveTab('jobs')}
+          >
+            💼 Jobs
+          </button>
         </nav>
       </aside>
 
@@ -160,10 +243,14 @@ export default function Student() {
       <main className="main-content">
         <div className="content-header">
           <h2 className="section-title">
-            {activeTab === 'all-courses' ? 'Available Courses' : 'My Enrolled Courses'}
+            {activeTab === 'all-courses' && 'Available Courses'}
+            {activeTab === 'enrolled' && 'My Enrolled Courses'}
+            {activeTab === 'jobs' && 'Available Jobs'}
           </h2>
           <div className="course-count">
-            {activeTab === 'all-courses' ? courses.length : enrolledCourses.length} courses
+            {activeTab === 'all-courses' && `${courses.length} courses`}
+            {activeTab === 'enrolled' && `${enrolledCourses.length} courses`}
+            {activeTab === 'jobs' && `${jobs.length} jobs`}
           </div>
         </div>
 
@@ -239,7 +326,7 @@ export default function Student() {
               </div>
             )}
           </div>
-        ) : (
+        ) : activeTab === 'enrolled' ? (
           <div className="course-grid">
             {enrolledCourses.length > 0 ? (
               enrolledCourses.map((course) => (
@@ -304,8 +391,83 @@ export default function Student() {
               </div>
             )}
           </div>
+        ) : (
+          <div className="course-grid">
+            {jobs.length > 0 ? (
+              jobs.map((job) => (
+                <div key={job._id} className="course-card">
+                  <div className="course-header">
+                    <h3 className="course-title">{job.company}</h3>
+                    <span className="enrolled-badge">{job.type}</span>
+                  </div>
+
+                  <p className="course-description">{job.description}</p>
+
+                  <div className="course-meta">
+                    <span><strong>Location:</strong> {job.location}</span>
+                    <span><strong>Salary:</strong> {job.salary ? `₹${job.salary}` : 'N/A'}</span>
+                    <span><strong>Posted:</strong> {new Date(job.createdAt).toLocaleDateString()}</span>
+                  </div>
+
+                  <div className="course-actions">
+                    {hasApplied(job) || jobApplyState[job._id] === 'applied' ? (
+                      <button className="enrolled-btn" disabled>
+                        ✅ Applied
+                      </button>
+                    ) : (
+                      <button 
+                        className="enroll-btn"
+                        onClick={() => openApplyModal(job)}
+                        disabled={jobApplyState[job._id] === 'applying'}
+                      >
+                        Apply
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="no-courses">
+                <p>No jobs available at the moment.</p>
+              </div>
+            )}
+          </div>
         )}
       </main>
+
+      {showApplyModal && selectedJob && (
+        <div className="modal-overlay" onClick={closeApplyModal}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Apply for {selectedJob.company}</h3>
+              <button className="modal-close" onClick={closeApplyModal}>×</button>
+            </div>
+            <div className="modal-body">
+              <div className="form-group">
+                <label htmlFor="resumeInput">Resume (paste text or URL)</label>
+                <textarea
+                  id="resumeInput"
+                  className="textarea"
+                  rows={6}
+                  placeholder="Paste your resume text or a link to your resume"
+                  value={resumeInput}
+                  onChange={(e) => setResumeInput(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="view-btn" onClick={closeApplyModal}>Cancel</button>
+              <button
+                className="enroll-btn"
+                onClick={() => applyToJob(selectedJob._id)}
+                disabled={jobApplyState[selectedJob._id] === 'applying'}
+              >
+                {jobApplyState[selectedJob._id] === 'applying' ? 'Submitting...' : 'Submit Application'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
