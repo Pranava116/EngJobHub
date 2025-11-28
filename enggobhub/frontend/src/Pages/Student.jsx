@@ -17,18 +17,24 @@ export default function Student() {
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const [resumeInput, setResumeInput] = useState('');
+  const [aiResumeFile, setAiResumeFile] = useState(null);
+  const [aiJobs, setAiJobs] = useState([]);
+  const [aiInsights, setAiInsights] = useState(null);
+  const [aiFilterLoading, setAiFilterLoading] = useState(false);
+  const [aiFilterError, setAiFilterError] = useState('');
+  const [aiLocation, setAiLocation] = useState('India');
+  const [showEngJobs, setShowEngJobs] = useState(true);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all-courses');
   const [enrollmentStatus, setEnrollmentStatus] = useState({});
+  
 
-  // Student info from authenticated user
   const student = {
     name: user?.name || "Student",
     email: user?.email || "student@engjobhub.com",
     role: user?.role || "student",
   };
 
-  // Fetch all available courses
   const fetchCourses = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -82,6 +88,67 @@ export default function Student() {
       }
     } catch (err) {
       console.error('Error fetching jobs:', err);
+    }
+  };
+
+  const runAiFilter = async () => {
+    if (!aiResumeFile) {
+      alert('Upload a resume before running AI filter.');
+      return;
+    }
+
+    try {
+      setAiFilterLoading(true);
+      setAiFilterError('');
+      setAiInsights(null);
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('resume', aiResumeFile);
+      if (aiLocation) {
+        formData.append('location', aiLocation);
+      }
+
+      const response = await fetch('http://localhost:5000/api/external-jobs/ai-filter', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const rawBody = await response.text();
+      let data = {};
+      if (rawBody) {
+        try {
+          data = JSON.parse(rawBody);
+        } catch {
+          data = { message: rawBody };
+        }
+      }
+      if (!response.ok) {
+        setAiJobs([]);
+        setAiFilterError(data.message || 'Failed to run AI filter.');
+        return;
+      }
+
+      const normalizedJobs = Array.isArray(data.jobs) ? data.jobs : [];
+      setAiJobs(normalizedJobs);
+      if (normalizedJobs.length > 0) {
+        setShowEngJobs(false);
+      }
+      setAiInsights({
+        query: data.query,
+        skills: data.skills || [],
+        sources: data.sources || [],
+        seniority: data.seniority,
+        yearsExperience: data.yearsExperience,
+        location: aiLocation,
+      });
+    } catch (error) {
+      console.error('AI filter error:', error);
+      setAiFilterError('Unable to reach AI job filter service. Ensure the backend is running and reachable.');
+    } finally {
+      setAiFilterLoading(false);
     }
   };
 
@@ -218,6 +285,9 @@ export default function Student() {
     setResumeInput('');
   };
 
+  const externalJobCount = hasSearchedExternal ? externalJobs.length : 0;
+  const totalJobCount = aiJobs.length > 0 ? aiJobs.length : jobs.length + externalJobCount;
+
   if (loading) {
     return (
       <div className="loading-container">
@@ -288,7 +358,7 @@ export default function Student() {
           <div className="course-count">
             {activeTab === 'all-courses' && `${courses.length} courses`}
             {activeTab === 'enrolled' && `${enrolledCourses.length} courses`}
-            {activeTab === 'jobs' && `${jobs.length + (hasSearchedExternal ? externalJobs.length : 0)} jobs`}
+            {activeTab === 'jobs' && `${totalJobCount} jobs`}
           </div>
         </div>
 
@@ -431,10 +501,80 @@ export default function Student() {
           </div>
         ) : (
           <div className="course-grid">
-            {/* Search/filter for external jobs */}
-            <div className="course-card" style={{ gridColumn: '1 / -1' }}>
+            <div className="course-card ai-filter-card" style={{ gridColumn: '1 / -1' }}>
               <div className="course-header">
-                <h3 className="course-title">Find External Jobs (Indeed)</h3>
+                <h3 className="course-title">AI Job Filter</h3>
+                <span className="enrolled-badge">LinkedIn · Indeed · More</span>
+              </div>
+              <p className="course-description">
+                Upload your resume (PDF) and let our AI summarize your skills to surface relevant openings from LinkedIn, Indeed, Glassdoor and other partners.
+              </p>
+              <div className="ai-filter-upload">
+                <label className="ai-upload-label">
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) => {
+                      setAiResumeFile(e.target.files[0] || null);
+                      setAiFilterError('');
+                    }}
+                  />
+                  {aiResumeFile ? aiResumeFile.name : 'Attach resume (PDF)'}
+                </label>
+                <button
+                  className="enroll-btn"
+                  onClick={runAiFilter}
+                  disabled={!aiResumeFile || aiFilterLoading}
+                >
+                  {aiFilterLoading ? 'Analyzing…' : 'Run AI Filter'}
+                </button>
+                {aiResumeFile && (
+                  <button className="view-btn" onClick={() => { setAiResumeFile(null); setAiFilterError(''); }}>
+                    Clear
+                  </button>
+                )}
+              </div>
+              <div className="ai-filter-upload">
+                <input
+                  type="text"
+                  className="view-btn"
+                  style={{ flex: '1 1 240px', textAlign: 'left' }}
+                  placeholder="Preferred location (e.g., Remote, India, US)"
+                  value={aiLocation}
+                  onChange={(e) => setAiLocation(e.target.value)}
+                />
+              </div>
+              {aiFilterError && <p className="ai-error">{aiFilterError}</p>}
+              {aiInsights && (
+                <div className="ai-summary">
+                  <p><strong>Focus query:</strong> {aiInsights.query}</p>
+                  {aiInsights.location && (
+                    <p><strong>Location:</strong> {aiInsights.location}</p>
+                  )}
+                  {aiInsights.skills?.length > 0 && (
+                    <p className="ai-tags">
+                      {aiInsights.skills.map((skill) => (
+                        <span key={skill}>{skill}</span>
+                      ))}
+                    </p>
+                  )}
+                  <p className="ai-sources">
+                    <strong>Sources:</strong> {aiInsights.sources.length ? aiInsights.sources.join(', ') : 'Multi-platform'}
+                  </p>
+                  <button
+                    className="ai-toggle-btn"
+                    onClick={() => setShowEngJobs((prev) => !prev)}
+                  >
+                    {showEngJobs ? 'Hide EngJobHub postings' : 'Show EngJobHub postings'}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Search/filter for external jobs */}
+            <div className="course-card external-search-card" style={{ gridColumn: '1 / -1' }}>
+              <div className="course-header">
+                <h3 className="course-title">Browse Indeed Listings</h3>
                 <span className="enrolled-badge">External</span>
               </div>
               <div className="course-actions" style={{ gap: '8px', flexWrap: 'wrap' }}>
@@ -460,39 +600,101 @@ export default function Student() {
               </div>
             </div>
 
-            {/* Internal jobs */}
-            {jobs.length > 0 && jobs.map((job) => (
-              <div key={job._id} className="course-card">
-                <div className="course-header">
-                  <h3 className="course-title">{job.company}</h3>
-                  <span className="enrolled-badge">{job.type}</span>
+            {/* AI curated jobs */}
+            {aiJobs.length > 0 && (
+              <div className="job-section" style={{ gridColumn: '1 / -1' }}>
+                <div className="job-section-header">
+                  <div>
+                    <h3>AI curated roles</h3>
+                    <p>Matches from {aiInsights?.sources?.length ? aiInsights.sources.join(', ') : 'trusted job boards'}</p>
+                  </div>
+                  <span className="job-count-badge">{aiJobs.length} roles</span>
                 </div>
-
-                <p className="course-description">{job.description}</p>
-
-                <div className="course-meta">
-                  <span><strong>Location:</strong> {job.location}</span>
-                  <span><strong>Salary:</strong> {job.salary ? `₹${job.salary}` : 'N/A'}</span>
-                  <span><strong>Posted:</strong> {new Date(job.createdAt).toLocaleDateString()}</span>
-                </div>
-
-                <div className="course-actions">
-                  {hasApplied(job) || jobApplyState[job._id] === 'applied' ? (
-                    <button className="enrolled-btn" disabled>
-                      ✅ Applied
-                    </button>
-                  ) : (
-                    <button
-                      className="enroll-btn"
-                      onClick={() => openApplyModal(job)}
-                      disabled={jobApplyState[job._id] === 'applying'}
-                    >
-                      Apply
-                    </button>
-                  )}
-                </div>
+                {aiJobs.map((job) => (
+                  <div key={job.id} className="course-card job-card-highlight">
+                    <div className="course-header">
+                      <h3 className="course-title">{job.title}</h3>
+                      <span className="enrolled-badge">{job.source || 'External'}</span>
+                    </div>
+                    <p className="course-description">{job.company} {job.location ? `• ${job.location}` : ''}</p>
+                    <div className="course-meta">
+                      <span><strong>Remote:</strong> {job.remote ? 'Yes' : 'No'}</span>
+                      <span><strong>Salary:</strong> {job.salary ? job.salary : 'N/A'}</span>
+                      <span><strong>Posted:</strong> {job.postedAt ? new Date(job.postedAt).toLocaleDateString() : 'N/A'}</span>
+                    </div>
+                    <div className="course-actions">
+                      <a
+                        href={job.applyLink || '#'}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="view-btn"
+                      >
+                        View & Apply
+                      </a>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
+
+            {/* AI filtered jobs */}
+            {aiInsights && aiJobs.length === 0 && (
+              <div className="course-card" style={{ gridColumn: '1 / -1' }}>
+                <div className="course-header">
+                  <h3 className="course-title">No matches yet</h3>
+                  <span className="enrolled-badge">AI Filter</span>
+                </div>
+                <p className="course-description">
+                  We could not find live openings for {aiInsights.query} in {aiInsights.location || 'the selected region'}.
+                  Try broadening the location or tweaking your resume keywords.
+                </p>
+              </div>
+            )}
+
+            {/* Internal jobs */}
+            {showEngJobs && jobs.length > 0 && (
+              <div className="job-section" style={{ gridColumn: '1 / -1' }}>
+                <div className="job-section-header">
+                  <div>
+                    <h3>EngJobHub Opportunities</h3>
+                    <p>Direct postings curated by our partner companies</p>
+                  </div>
+                  <span className="job-count-badge">{jobs.length} listings</span>
+                </div>
+                {jobs.map((job) => (
+                  <div key={job._id} className="course-card">
+                    <div className="course-header">
+                      <h3 className="course-title">{job.company}</h3>
+                      <span className="enrolled-badge">{job.type}</span>
+                    </div>
+
+                    <p className="course-description">{job.description}</p>
+
+                    <div className="course-meta">
+                      <span><strong>Location:</strong> {job.location}</span>
+                      <span><strong>Salary:</strong> {job.salary ? `₹${job.salary}` : 'N/A'}</span>
+                      <span><strong>Posted:</strong> {new Date(job.createdAt).toLocaleDateString()}</span>
+                    </div>
+
+                    <div className="course-actions">
+                      {hasApplied(job) || jobApplyState[job._id] === 'applied' ? (
+                        <button className="enrolled-btn" disabled>
+                          ✅ Applied
+                        </button>
+                      ) : (
+                        <button
+                          className="enroll-btn"
+                          onClick={() => openApplyModal(job)}
+                          disabled={jobApplyState[job._id] === 'applying'}
+                        >
+                          Apply
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* External Indeed jobs (only after search) */}
             {hasSearchedExternal && externalJobs.length > 0 && externalJobs.map((job) => (

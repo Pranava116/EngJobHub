@@ -27,7 +27,7 @@ export const applyForJob = async (req, res) => {
   		access_mode: "public",
       });
       resumeUrl = uploaded.secure_url;
-      fs.unlinkSync(req.file.path); // cleanup local file
+      fs.unlinkSync(req.file.path); 
     }
 
     
